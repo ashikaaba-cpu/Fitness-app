@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ForgeBody — Fitness Redefined</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+  :root {
+    --bg: #0a0a0a;
+    --bg2: #111111;
+    --bg3: #181818;
+    --card: #141414;
+    --accent: #b5f542;
+    --accent2: #7ed321;
+    --muted: #555;
+    --text: #f0f0f0;
+    --text2: #aaa;
+    --radius: 16px;
+    --transition: 0.35s cubic-bezier(.4,0,.2,1);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    overflow-x: hidden;
+    line-height: 1.6;
+  }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg2); }
+  ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
+
+  /* ── NAVBAR ── */
+  nav {
+    position: fixed; top: 0; left: 0; width: 100%; z-index: 1000;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 5%; height: 70px;
+    background: rgba(10,10,10,0.85);
+    backdrop-filter: blur(18px);
+    border-bottom: 1px solid rgba(181,245,66,0.08);
+    transition: var(--transition);
+  }
+  nav.scrolled { background: rgba(10,10,10,0.97); }
+
+  .logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.9rem;
+    letter-spacing: 2px;
+    color: var(--accent);
+    text-decoration: none;
+  }
+  .logo span { color: var(--text); }
+
+  .nav-links {
+    display: flex; gap: 2.2rem; list-style: none;
+  }
+  .nav-links a {
+    text-decoration: none; color: var(--text2);
+    font-size: .9rem; font-weight: 500; letter-spacing: .5px;
+    transition: color var(--transition);
+    position: relative;
+  }
+  .nav-links a::after {
+    content: ''; position: absolute; bottom: -4px; left: 0;
+    width: 0; height: 2px; background: var(--accent);
+    transition: width var(--transition);
+  }
+  .nav-links a:hover { color: var(--accent); }
+  .nav-links a:hover::after { width: 100%; }
+
+  .nav-cta {
+    background: var(--accent); color: #000 !important;
+    padding: .45rem 1.2rem; border-radius: 8px;
+    font-weight: 600 !important;
+  }
+  .nav-cta::after { display: none !important; }
+  .nav-cta:hover { background: var(--accent2); color: #000 !important; }
+
+  /* hamburger */
+  .hamburger {
+    display: none; flex-direction: column; gap: 5px;
+    cursor: pointer; background: none; border: none; padding: 4px;
+  }
+  .hamburger span {
+    display: block; width: 26px; height: 2px;
+    background: var(--text); border-radius: 2px;
+    transition: var(--transition);
+  }
+  .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  .hamburger.open span:nth-child(2) { opacity: 0; }
+  .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+  .mobile-menu {
+    display: none; position: fixed; top: 70px; left: 0; width: 100%;
+    background: rgba(10,10,10,0.98); padding: 2rem;
+    flex-direction: column; gap: 1.5rem; z-index: 999;
+    border-bottom: 1px solid rgba(181,245,66,0.1);
+    transform: translateY(-10px); opacity: 0;
+    transition: var(--transition);
+  }
+  .mobile-menu.open { transform: translateY(0); opacity: 1; }
+  .mobile-menu a {
+    text-decoration: none; color: var(--text2);
+    font-size: 1.1rem; font-weight: 500;
+    transition: color var(--transition);
+  }
+  .mobile-menu a:hover { color: var(--accent); }
+
+  /* ── HERO ── */
+  #home {
+    min-height: 100vh;
+    display: flex; align-items: center;
+    padding: 120px 5% 80px;
+    position: relative; overflow: hidden;
+  }
+
+  .hero-bg {
+    position: absolute; inset: 0; z-index: 0;
+    background:
+      radial-gradient(ellipse 60% 50% at 70% 50%, rgba(181,245,66,0.07) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 40% at 20% 80%, rgba(181,245,66,0.04) 0%, transparent 60%);
+  }
+  .hero-grid {
+    position: absolute; inset: 0; z-index: 0; opacity: 0.04;
+    background-image: linear-gradient(var(--muted) 1px, transparent 1px),
+                      linear-gradient(90deg, var(--muted) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+
+  .hero-content { position: relative; z-index: 1; max-width: 720px; }
+
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: .5rem;
+    background: rgba(181,245,66,0.1); border: 1px solid rgba(181,245,66,0.25);
+    color: var(--accent); font-size: .8rem; font-weight: 600;
+    letter-spacing: 1.5px; text-transform: uppercase;
+    padding: .4rem 1rem; border-radius: 50px; margin-bottom: 1.8rem;
+    animation: fadeDown .6s ease both;
+  }
+  .hero-badge::before { content: '⚡'; }
+
+  h1.hero-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(4rem, 10vw, 8rem);
+    line-height: .95;
+    letter-spacing: 2px;
+    color: var(--text);
+    animation: fadeDown .7s .1s ease both;
+  }
+  h1.hero-title span { color: var(--accent); }
+
+  .hero-desc {
+    margin: 1.8rem 0 2.5rem;
+    color: var(--text2); font-size: 1.1rem;
+    max-width: 520px; line-height: 1.7;
+    animation: fadeDown .7s .2s ease both;
+  }
+
+  .hero-actions {
+    display: flex; gap: 1rem; flex-wrap: wrap;
+    animation: fadeDown .7s .3s ease both;
+  }
+
+  .btn-primary {
+    background: var(--accent); color: #000;
+    padding: .85rem 2.2rem; border-radius: 10px;
+    font-weight: 700; font-size: 1rem;
+    text-decoration: none; border: none; cursor: pointer;
+    transition: var(--transition);
+    letter-spacing: .5px;
+  }
+  .btn-primary:hover { background: var(--accent2); transform: translateY(-2px); box-shadow: 0 8px 30px rgba(181,245,66,0.25); }
+
+  .btn-ghost {
+    background: transparent; color: var(--text);
+    padding: .85rem 2.2rem; border-radius: 10px;
+    font-weight: 600; font-size: 1rem;
+    text-decoration: none; border: 1px solid rgba(255,255,255,0.15);
+    transition: var(--transition); cursor: pointer;
+  }
+  .btn-ghost:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
+
+  .hero-stats {
+    display: flex; gap: 2.5rem; margin-top: 4rem;
+    animation: fadeDown .7s .4s ease both;
+  }
+  .stat-item { display: flex; flex-direction: column; }
+  .stat-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.5rem; color: var(--accent); line-height: 1;
+  }
+  .stat-label { font-size: .78rem; color: var(--text2); text-transform: uppercase; letter-spacing: 1px; margin-top: .2rem; }
+
+  .hero-visual {
+    position: absolute; right: 5%; top: 50%; transform: translateY(-50%);
+    width: 380px; height: 380px; z-index: 1;
+    display: flex; align-items: center; justify-content: center;
+    animation: floatAnim 4s ease-in-out infinite;
+  }
+
+  .hero-circle {
+    width: 300px; height: 300px; border-radius: 50%;
+    border: 2px solid rgba(181,245,66,0.15);
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+  }
+  .hero-circle::before {
+    content: '';
+    position: absolute; inset: -20px; border-radius: 50%;
+    border: 1px dashed rgba(181,245,66,0.08);
+    animation: spinSlow 12s linear infinite;
+  }
+  .hero-circle::after {
+    content: '';
+    position: absolute; inset: -40px; border-radius: 50%;
+    border: 1px dashed rgba(181,245,66,0.05);
+    animation: spinSlow 20s linear infinite reverse;
+  }
+
+  .hero-icon-wrap {
+    width: 180px; height: 180px; border-radius: 50%;
+    background: linear-gradient(135deg, rgba(181,245,66,0.12), rgba(181,245,66,0.03));
+    border: 1px solid rgba(181,245,66,0.2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 5rem;
+  }
+
+  /* ── SECTION BASE ── */
+  section { padding: 100px 5%; }
+  .section-tag {
+    display: inline-flex; align-items: center; gap: .5rem;
+    color: var(--accent); font-size: .78rem;
+    text-transform: uppercase; letter-spacing: 2px; font-weight: 600;
+    margin-bottom: 1rem;
+  }
+  .section-tag::before { content: ''; width: 24px; height: 2px; background: var(--accent); display: inline-block; }
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    letter-spacing: 1.5px; line-height: 1.05;
+    margin-bottom: 1rem;
+  }
+  .section-title span { color: var(--accent); }
+  .section-sub {
+    color: var(--text2); font-size: 1rem; max-width: 540px;
+    margin-bottom: 3.5rem; line-height: 1.7;
+  }
+
+  /* ── WORKOUTS ── */
+  #workouts { background: var(--bg2); }
+
+  .workouts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .workout-card {
+    background: var(--card);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: var(--radius);
+    padding: 2rem;
+    position: relative; overflow: hidden;
+    transition: var(--transition);
+    cursor: pointer;
+  }
+  .workout-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: var(--card-accent, var(--accent));
+    transform: scaleX(0); transform-origin: left;
+    transition: transform var(--transition);
+  }
+  .workout-card:hover { transform: translateY(-6px); border-color: rgba(181,245,66,0.15); box-shadow: 0 20px 50px rgba(0,0,0,0.4); }
+  .workout-card:hover::before { transform: scaleX(1); }
+
+  .workout-card.beginner { --card-accent: #b5f542; }
+  .workout-card.intermediate { --card-accent: #f5a623; }
+  .workout-card.advanced { --card-accent: #ff4757; }
+
+  .card-icon { font-size: 2.5rem; margin-bottom: 1.2rem; }
+  .card-level {
+    font-size: .72rem; text-transform: uppercase; letter-spacing: 1.5px;
+    font-weight: 700; color: var(--card-accent, var(--accent));
+    margin-bottom: .5rem;
+  }
+  .card-title { font-size: 1.4rem; font-weight: 700; margin-bottom: .8rem; }
+  .card-desc { color: var(--text2); font-size: .9rem; line-height: 1.65; margin-bottom: 1.5rem; }
+
+  .card-meta {
+    display: flex; gap: 1.2rem;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    padding-top: 1.2rem;
+  }
+  .meta-item { display: flex; flex-direction: column; gap: .2rem; }
+  .meta-label { font-size: .7rem; color: var(--text2); text-transform: uppercase; letter-spacing: 1px; }
+  .meta-value { font-size: .9rem; font-weight: 600; color: var(--text); }
+
+  .card-exercises { list-style: none; margin-bottom: 1.5rem; display: flex; flex-direction: column; gap: .5rem; }
+  .card-exercises li {
+    font-size: .88rem; color: var(--text2);
+    padding-left: 1.2rem; position: relative;
+  }
+  .card-exercises li::before {
+    content: '›'; position: absolute; left: 0;
+    color: var(--card-accent, var(--accent)); font-weight: 700;
+  }
+
+  /* ── DIET ── */
+  #diet { background: var(--bg); }
+
+  .diet-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .diet-card {
+    background: var(--bg3);
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: var(--radius);
+    padding: 1.8rem;
+    transition: var(--transition);
+  }
+  .diet-card:hover { transform: translateY(-4px); border-color: rgba(181,245,66,0.12); box-shadow: 0 12px 40px rgba(0,0,0,0.3); }
+
+  .diet-icon { font-size: 2rem; margin-bottom: 1rem; }
+  .diet-title { font-size: 1.1rem; font-weight: 700; margin-bottom: .6rem; }
+  .diet-desc { color: var(--text2); font-size: .88rem; line-height: 1.65; }
+
+  /* ── BMI ── */
+  #bmi { background: var(--bg2); }
+
+  .bmi-wrapper {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 3rem; align-items: center;
+  }
+
+  .bmi-form {
+    background: var(--card);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 20px;
+    padding: 2.5rem;
+  }
+
+  .form-group { margin-bottom: 1.5rem; }
+  .form-group label {
+    display: block; font-size: .82rem; font-weight: 600;
+    color: var(--text2); text-transform: uppercase; letter-spacing: 1px;
+    margin-bottom: .6rem;
+  }
+  .form-group input, .form-group select, .form-group textarea {
+    width: 100%; padding: .85rem 1.1rem;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 10px; color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: .95rem;
+    transition: var(--transition);
+    outline: none;
+    appearance: none;
+  }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+    border-color: var(--accent);
+    background: rgba(181,245,66,0.03);
+    box-shadow: 0 0 0 3px rgba(181,245,66,0.08);
+  }
+  .form-group select option { background: var(--bg2); }
+
+  .bmi-result {
+    text-align: center; padding: 1.5rem;
+    background: rgba(181,245,66,0.05);
+    border: 1px solid rgba(181,245,66,0.1);
+    border-radius: 14px; margin-top: 1.5rem;
+    display: none;
+  }
+  .bmi-result.show { display: block; animation: fadeUp .4s ease both; }
+  .bmi-value {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 4rem; color: var(--accent); line-height: 1;
+  }
+  .bmi-label { font-size: 1.1rem; font-weight: 700; margin: .4rem 0; }
+  .bmi-desc { font-size: .85rem; color: var(--text2); }
+
+  .bmi-scale {
+    margin-top: 1.2rem;
+    height: 8px; border-radius: 4px;
+    background: linear-gradient(90deg, #4fc3f7, #b5f542, #f5a623, #ff4757);
+    position: relative; overflow: visible;
+  }
+  .bmi-indicator {
+    position: absolute; top: -4px;
+    width: 16px; height: 16px; border-radius: 50%;
+    background: #fff; box-shadow: 0 0 0 3px var(--accent);
+    transition: left .5s cubic-bezier(.4,0,.2,1);
+  }
+
+  .bmi-info-cards {
+    display: flex; flex-direction: column; gap: 1rem;
+  }
+  .bmi-info-card {
+    display: flex; align-items: center; gap: 1.2rem;
+    background: var(--card);
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: 12px; padding: 1.2rem 1.4rem;
+    transition: var(--transition);
+  }
+  .bmi-info-card:hover { border-color: rgba(181,245,66,0.15); }
+  .bmi-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+  .bmi-range { font-weight: 700; font-size: .95rem; }
+  .bmi-range-label { font-size: .82rem; color: var(--text2); }
+
+  /* ── CONTACT ── */
+  #contact { background: var(--bg); }
+
+  .contact-wrapper {
+    display: grid; grid-template-columns: 1fr 1.4fr;
+    gap: 4rem; align-items: start;
+  }
+
+  .contact-info { display: flex; flex-direction: column; gap: 1.8rem; }
+  .contact-item {
+    display: flex; gap: 1rem; align-items: flex-start;
+  }
+  .contact-item-icon {
+    width: 44px; height: 44px; border-radius: 10px;
+    background: rgba(181,245,66,0.1); border: 1px solid rgba(181,245,66,0.15);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem; flex-shrink: 0;
+  }
+  .contact-item-text strong { display: block; font-size: .95rem; margin-bottom: .2rem; }
+  .contact-item-text span { font-size: .85rem; color: var(--text2); }
+
+  .contact-form {
+    background: var(--bg3);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 20px; padding: 2.5rem;
+  }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .form-group textarea { resize: vertical; min-height: 130px; }
+  .form-success {
+    display: none; text-align: center; padding: 2rem;
+    color: var(--accent); font-weight: 600; font-size: 1rem;
+    animation: fadeUp .4s ease both;
+  }
+  .form-success.show { display: block; }
+
+  /* ── FOOTER ── */
+  footer {
+    background: #000;
+    padding: 3rem 5%;
+    border-top: 1px solid rgba(255,255,255,0.05);
+  }
+  .footer-inner {
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 1.5rem;
+  }
+  .footer-copy { font-size: .85rem; color: var(--muted); }
+  .footer-links { display: flex; gap: 1.5rem; }
+  .footer-links a { font-size: .82rem; color: var(--muted); text-decoration: none; transition: color var(--transition); }
+  .footer-links a:hover { color: var(--accent); }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes floatAnim {
+    0%, 100% { transform: translateY(-50%) translateY(0); }
+    50%       { transform: translateY(-50%) translateY(-14px); }
+  }
+  @keyframes spinSlow {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+  }
+
+  .reveal {
+    opacity: 0; transform: translateY(32px);
+    transition: opacity .7s ease, transform .7s ease;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    .hero-visual { display: none; }
+    .bmi-wrapper { grid-template-columns: 1fr; }
+    .contact-wrapper { grid-template-columns: 1fr; }
+    .form-row { grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 680px) {
+    .nav-links { display: none; }
+    .hamburger { display: flex; }
+    .mobile-menu { display: flex; }
+    h1.hero-title { font-size: clamp(3.2rem, 14vw, 5rem); }
+    .hero-stats { gap: 1.5rem; }
+    .stat-num { font-size: 2rem; }
+    section { padding: 70px 5%; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav id="navbar">
+  <a href="#home" class="logo">Forge<span>Body</span></a>
+  <ul class="nav-links">
+    <li><a href="#home">Home</a></li>
+    <li><a href="#workouts">Workouts</a></li>
+    <li><a href="#diet">Diet</a></li>
+    <li><a href="#bmi">BMI</a></li>
+    <li><a href="#contact" class="nav-cta">Contact</a></li>
+  </ul>
+  <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#home" onclick="closeMenu()">Home</a>
+  <a href="#workouts" onclick="closeMenu()">Workouts</a>
+  <a href="#diet" onclick="closeMenu()">Diet</a>
+  <a href="#bmi" onclick="closeMenu()">BMI Calculator</a>
+  <a href="#contact" onclick="closeMenu()">Contact</a>
+</div>
+
+<!-- HERO -->
+<section id="home">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-content">
+    <div class="hero-badge">Your Ultimate Fitness Hub</div>
+    <h1 class="hero-title">BUILD<br><span>YOUR</span><br>BEST SELF</h1>
+    <p class="hero-desc">Transform your body and mind with science-backed workout plans, nutrition guidance, and real progress tracking — all in one place.</p>
+    <div class="hero-actions">
+      <a href="#workouts" class="btn-primary">Start Training →</a>
+      <a href="#bmi" class="btn-ghost">Check Your BMI</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat-item">
+        <span class="stat-num">50K+</span>
+        <span class="stat-label">Active Members</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-num">120+</span>
+        <span class="stat-label">Workout Plans</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-num">98%</span>
+        <span class="stat-label">Success Rate</span>
+      </div>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <div class="hero-circle">
+      <div class="hero-icon-wrap">🏋️</div>
+    </div>
+  </div>
+</section>
+
+<!-- WORKOUTS -->
+<section id="workouts">
+  <div class="section-tag">Training Programs</div>
+  <h2 class="section-title">Choose Your <span>Plan</span></h2>
+  <p class="section-sub">Every journey is unique. Pick the program that fits where you are today, and we'll take you where you want to be.</p>
+  <div class="workouts-grid">
+
+    <div class="workout-card beginner reveal">
+      <div class="card-icon">🌱</div>
+      <div class="card-level">Beginner</div>
+      <div class="card-title">Foundation Build</div>
+      <div class="card-desc">Perfect for newcomers. Build core strength, flexibility, and healthy habits with guided low-intensity sessions.</div>
+      <ul class="card-exercises">
+        <li>Bodyweight Squats — 3×15</li>
+        <li>Push-ups — 3×10</li>
+        <li>Plank Hold — 3×30s</li>
+        <li>Jumping Jacks — 3×20</li>
+      </ul>
+      <div class="card-meta">
+        <div class="meta-item"><span class="meta-label">Duration</span><span class="meta-value">4 Weeks</span></div>
+        <div class="meta-item"><span class="meta-label">Days/Week</span><span class="meta-value">3 Days</span></div>
+        <div class="meta-item"><span class="meta-label">Session</span><span class="meta-value">30 min</span></div>
+      </div>
+    </div>
+
+    <div class="workout-card intermediate reveal" style="transition-delay:.1s">
+      <div class="card-icon">🔥</div>
+      <div class="card-level">Intermediate</div>
+      <div class="card-title">Power Surge</div>
+      <div class="card-desc">Step up with weighted exercises, HIIT circuits, and progressive overload to break through plateaus.</div>
+      <ul class="card-exercises">
+        <li>Barbell Squats — 4×8</li>
+        <li>Bench Press — 4×8</li>
+        <li>Deadlifts — 3×6</li>
+        <li>Dumbbell Lunges — 3×12</li>
+      </ul>
+      <div class="card-meta">
+        <div class="meta-item"><span class="meta-label">Duration</span><span class="meta-value">8 Weeks</span></div>
+        <div class="meta-item"><span class="meta-label">Days/Week</span><span class="meta-value">4 Days</span></div>
+        <div class="meta-item"><span class="meta-label">Session</span><span class="meta-value">50 min</span></div>
+      </div>
+    </div>
+
+    <div class="workout-card advanced reveal" style="transition-delay:.2s">
+      <div class="card-icon">⚡</div>
+      <div class="card-level">Advanced</div>
+      <div class="card-title">Elite Forge</div>
+      <div class="card-desc">High-intensity, high-volume training for experienced athletes pushing the limits of human performance.</div>
+      <ul class="card-exercises">
+        <li>Olympic Lifts — 5×5</li>
+        <li>Weighted Pull-ups — 5×6</li>
+        <li>Box Jumps — 4×10</li>
+        <li>Battle Ropes — 4×45s</li>
+      </ul>
+      <div class="card-meta">
+        <div class="meta-item"><span class="meta-label">Duration</span><span class="meta-value">12 Weeks</span></div>
+        <div class="meta-item"><span class="meta-label">Days/Week</span><span class="meta-value">5 Days</span></div>
+        <div class="meta-item"><span class="meta-label">Session</span><span class="meta-value">75 min</span></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- DIET -->
+<section id="diet">
+  <div class="section-tag">Nutrition</div>
+  <h2 class="section-title">Fuel Your <span>Performance</span></h2>
+  <p class="section-sub">Nutrition is the foundation of all results. These evidence-based tips will optimize your energy, recovery, and body composition.</p>
+  <div class="diet-grid">
+
+    <div class="diet-card reveal">
+      <div class="diet-icon">💧</div>
+      <div class="diet-title">Stay Hydrated</div>
+      <div class="diet-desc">Drink 2–3 liters of water daily. Add electrolytes during intense sessions. Hydration directly impacts strength output and recovery speed.</div>
+    </div>
+
+    <div class="diet-card reveal" style="transition-delay:.08s">
+      <div class="diet-icon">🥩</div>
+      <div class="diet-title">Prioritize Protein</div>
+      <div class="diet-desc">Aim for 1.6–2.2g of protein per kg of bodyweight. Lean meats, eggs, legumes, and dairy are your muscle-building allies.</div>
+    </div>
+
+    <div class="diet-card reveal" style="transition-delay:.16s">
+      <div class="diet-icon">🍚</div>
+      <div class="diet-title">Time Your Carbs</div>
+      <div class="diet-desc">Eat complex carbs 1–2 hours before training for sustained energy. Oats, rice, and sweet potatoes are excellent choices.</div>
+    </div>
+
+    <div class="diet-card reveal" style="transition-delay:.24s">
+      <div class="diet-icon">🥑</div>
+      <div class="diet-title">Healthy Fats</div>
+      <div class="diet-desc">Don't fear fats. Avocados, nuts, and olive oil support hormone production and joint health — essential for long-term training.</div>
+    </div>
+
+    <div class="diet-card reveal" style="transition-delay:.32s">
+      <div class="diet-icon">🌙</div>
+      <div class="diet-title">Post-Workout Meal</div>
+      <div class="diet-desc">Consume a protein + carb meal within 45 minutes of training. This anabolic window maximizes muscle repair and glycogen restoration.</div>
+    </div>
+
+    <div class="diet-card reveal" style="transition-delay:.40s">
+      <div class="diet-icon">🚫</div>
+      <div class="diet-title">Minimize Processed Foods</div>
+      <div class="diet-desc">Cut out refined sugars and trans fats. Whole, minimally processed foods reduce inflammation and improve body composition over time.</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- BMI CALCULATOR -->
+<section id="bmi">
+  <div class="section-tag">Health Metrics</div>
+  <h2 class="section-title">BMI <span>Calculator</span></h2>
+  <p class="section-sub">Know your baseline. Calculate your Body Mass Index and understand what it means for your fitness journey.</p>
+
+  <div class="bmi-wrapper">
+    <div class="bmi-form reveal">
+      <div class="form-group">
+        <label>Unit System</label>
+        <select id="unitSystem" onchange="toggleUnits()">
+          <option value="metric">Metric (kg / cm)</option>
+          <option value="imperial">Imperial (lbs / ft + in)</option>
+        </select>
+      </div>
+
+      <div id="metricInputs">
+        <div class="form-group">
+          <label>Height (cm)</label>
+          <input type="number" id="heightCm" placeholder="e.g. 175" min="50" max="300" />
+        </div>
+        <div class="form-group">
+          <label>Weight (kg)</label>
+          <input type="number" id="weightKg" placeholder="e.g. 70" min="20" max="500" />
+        </div>
+      </div>
+
+      <div id="imperialInputs" style="display:none">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem" class="form-group">
+          <div>
+            <label>Height (ft)</label>
+            <input type="number" id="heightFt" placeholder="5" min="1" max="9" />
+          </div>
+          <div>
+            <label>Height (in)</label>
+            <input type="number" id="heightIn" placeholder="9" min="0" max="11" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Weight (lbs)</label>
+          <input type="number" id="weightLbs" placeholder="e.g. 154" min="44" max="1100" />
+        </div>
+      </div>
+
+      <button class="btn-primary" style="width:100%" onclick="calculateBMI()">Calculate BMI</button>
+
+      <div class="bmi-result" id="bmiResult">
+        <div class="bmi-value" id="bmiValue">—</div>
+        <div class="bmi-label" id="bmiLabel">—</div>
+        <div class="bmi-desc" id="bmiDesc">—</div>
+        <div class="bmi-scale">
+          <div class="bmi-indicator" id="bmiIndicator" style="left:0%"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bmi-info-cards reveal" style="transition-delay:.15s">
+      <h3 style="font-size:1.1rem;font-weight:700;margin-bottom:.5rem;color:var(--text2)">BMI CATEGORIES</h3>
+      <div class="bmi-info-card">
+        <div class="bmi-dot" style="background:#4fc3f7"></div>
+        <div>
+          <div class="bmi-range">Below 18.5</div>
+          <div class="bmi-range-label">Underweight — Consider increasing caloric intake</div>
+        </div>
+      </div>
+      <div class="bmi-info-card">
+        <div class="bmi-dot" style="background:#b5f542"></div>
+        <div>
+          <div class="bmi-range">18.5 — 24.9</div>
+          <div class="bmi-range-label">Normal Weight — Maintain with balanced lifestyle</div>
+        </div>
+      </div>
+      <div class="bmi-info-card">
+        <div class="bmi-dot" style="background:#f5a623"></div>
+        <div>
+          <div class="bmi-range">25.0 — 29.9</div>
+          <div class="bmi-range-label">Overweight — Focus on cardio and diet</div>
+        </div>
+      </div>
+      <div class="bmi-info-card">
+        <div class="bmi-dot" style="background:#ff4757"></div>
+        <div>
+          <div class="bmi-range">30.0 and above</div>
+          <div class="bmi-range-label">Obese — Consult a healthcare professional</div>
+        </div>
+      </div>
+      <p style="font-size:.78rem;color:var(--muted);margin-top:.5rem;line-height:1.6">⚠ BMI is a general screening tool and does not account for muscle mass, bone density, or body composition. Always consult a professional for comprehensive assessment.</p>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="section-tag">Get In Touch</div>
+  <h2 class="section-title">Ready to <span>Start?</span></h2>
+  <p class="section-sub">Have questions? Want a custom plan? Our coaches are here to help you crush your fitness goals.</p>
+
+  <div class="contact-wrapper">
+    <div class="contact-info reveal">
+      <div class="contact-item">
+        <div class="contact-item-icon">📍</div>
+        <div class="contact-item-text">
+          <strong>Visit Us</strong>
+          <span>12 Iron District, Steel City, SC 10001</span>
+        </div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-item-icon">📧</div>
+        <div class="contact-item-text">
+          <strong>Email Us</strong>
+          <span>hello@forgebody.com</span>
+        </div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-item-icon">📞</div>
+        <div class="contact-item-text">
+          <strong>Call Us</strong>
+          <span>+1 (555) 246-8024</span>
+        </div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-item-icon">🕐</div>
+        <div class="contact-item-text">
+          <strong>Hours</strong>
+          <span>Mon–Sat: 5AM – 10PM · Sun: 7AM – 8PM</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="contact-form reveal" style="transition-delay:.15s">
+      <div id="contactFormWrap">
+        <div class="form-row">
+          <div class="form-group">
+            <label>First Name</label>
+            <input type="text" id="fname" placeholder="Alex" />
+          </div>
+          <div class="form-group">
+            <label>Last Name</label>
+            <input type="text" id="lname" placeholder="Johnson" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Email Address</label>
+          <input type="email" id="email" placeholder="alex@example.com" />
+        </div>
+        <div class="form-group">
+          <label>Subject</label>
+          <select id="subject">
+            <option value="">Select a topic...</option>
+            <option>Custom Workout Plan</option>
+            <option>Nutrition Coaching</option>
+            <option>Membership Inquiry</option>
+            <option>General Question</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Message</label>
+          <textarea id="message" placeholder="Tell us about your fitness goals..."></textarea>
+        </div>
+        <button class="btn-primary" style="width:100%" onclick="submitForm()">Send Message →</button>
+      </div>
+      <div class="form-success" id="formSuccess">
+        <div style="font-size:3rem;margin-bottom:1rem">✅</div>
+        <div style="font-size:1.3rem;font-weight:700;margin-bottom:.5rem">Message Sent!</div>
+        <div style="color:var(--text2);font-weight:400;font-size:.9rem">We'll get back to you within 24 hours. Time to start training! 💪</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div>
+      <a href="#home" class="logo" style="font-size:1.5rem">Forge<span>Body</span></a>
+      <p class="footer-copy" style="margin-top:.5rem">© 2025 ForgeBody. All rights reserved.</p>
+    </div>
+    <div class="footer-links">
+      <a href="#home">Home</a>
+      <a href="#workouts">Workouts</a>
+      <a href="#diet">Diet</a>
+      <a href="#bmi">BMI</a>
+      <a href="#contact">Contact</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  /* ── NAVBAR SCROLL ── */
+  const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    navbar.classList.toggle('scrolled', window.scrollY > 40);
+  });
+
+  /* ── HAMBURGER ── */
+  const hamburger = document.getElementById('hamburger');
+  const mobileMenu = document.getElementById('mobileMenu');
+
+  hamburger.addEventListener('click', () => {
+    hamburger.classList.toggle('open');
+    mobileMenu.classList.toggle('open');
+  });
+
+  function closeMenu() {
+    hamburger.classList.remove('open');
+    mobileMenu.classList.remove('open');
+  }
+
+  /* ── SCROLL REVEAL ── */
+  const revealEls = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.12 });
+
+  revealEls.forEach(el => observer.observe(el));
+
+  /* ── BMI UNIT TOGGLE ── */
+  function toggleUnits() {
+    const system = document.getElementById('unitSystem').value;
+    document.getElementById('metricInputs').style.display = system === 'metric' ? 'block' : 'none';
+    document.getElementById('imperialInputs').style.display = system === 'imperial' ? 'block' : 'none';
+    document.getElementById('bmiResult').classList.remove('show');
+  }
+
+  /* ── BMI CALCULATE ── */
+  function calculateBMI() {
+    const system = document.getElementById('unitSystem').value;
+    let bmi, valid = true;
+
+    if (system === 'metric') {
+      const h = parseFloat(document.getElementById('heightCm').value);
+      const w = parseFloat(document.getElementById('weightKg').value);
+      if (!h || !w || h < 50 || h > 300 || w < 10 || w > 500) { valid = false; }
+      else { const hm = h / 100; bmi = w / (hm * hm); }
+    } else {
+      const ft = parseFloat(document.getElementById('heightFt').value) || 0;
+      const ins = parseFloat(document.getElementById('heightIn').value) || 0;
+      const lbs = parseFloat(document.getElementById('weightLbs').value);
+      const totalIn = ft * 12 + ins;
+      if (!totalIn || !lbs || totalIn < 20 || lbs < 44) { valid = false; }
+      else { bmi = (lbs / (totalIn * totalIn)) * 703; }
+    }
+
+    if (!valid) {
+      alert('Please enter valid height and weight values.');
+      return;
+    }
+
+    bmi = Math.round(bmi * 10) / 10;
+    let label, desc, color, pct;
+
+    if (bmi < 18.5) {
+      label = 'Underweight'; desc = 'Consider increasing caloric intake and consulting a nutritionist.';
+      color = '#4fc3f7'; pct = Math.max(2, (bmi / 18.5) * 22);
+    } else if (bmi < 25) {
+      label = 'Normal Weight'; desc = 'Great job! Maintain your lifestyle with balanced nutrition and exercise.';
+      color = '#b5f542'; pct = 22 + ((bmi - 18.5) / 6.5) * 28;
+    } else if (bmi < 30) {
+      label = 'Overweight'; desc = 'Focus on cardio workouts and reduce processed food intake.';
+      color = '#f5a623'; pct = 50 + ((bmi - 25) / 5) * 25;
+    } else {
+      label = 'Obese'; desc = 'Please consult a healthcare professional for a personalized plan.';
+      color = '#ff4757'; pct = Math.min(96, 75 + ((bmi - 30) / 10) * 21);
+    }
+
+    document.getElementById('bmiValue').textContent = bmi;
+    document.getElementById('bmiLabel').textContent = label;
+    document.getElementById('bmiLabel').style.color = color;
+    document.getElementById('bmiDesc').textContent = desc;
+    document.getElementById('bmiIndicator').style.left = pct + '%';
+
+    const result = document.getElementById('bmiResult');
+    result.classList.remove('show');
+    void result.offsetWidth;
+    result.classList.add('show');
+  }
+
+  /* ── CONTACT FORM ── */
+  function submitForm() {
+    const fname = document.getElementById('fname').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const message = document.getElementById('message').value.trim();
+
+    if (!fname || !email || !message) {
+      alert('Please fill in your name, email, and message before sending.');
+      return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      alert('Please enter a valid email address.');
+      return;
+    }
+
+    document.getElementById('contactFormWrap').style.display = 'none';
+    const success = document.getElementById('formSuccess');
+    success.classList.add('show');
+  }
+
+  /* ── SMOOTH ACTIVE NAV ── */
+  const sections = document.querySelectorAll('section[id]');
+  const navAnchors = document.querySelectorAll('.nav-links a');
+  window.addEventListener('scroll', () => {
+    let cur = '';
+    sections.forEach(s => {
+      if (window.scrollY >= s.offsetTop - 120) cur = s.id;
+    });
+    navAnchors.forEach(a => {
+      a.style.color = a.getAttribute('href') === '#' + cur ? 'var(--accent)' : '';
+    });
+  });
+</script>
+</body>
+</html>
